@@ -86,7 +86,21 @@ app.route("/api/entry/:title")
 
 app.route("/api/vote/:title")
   .patch(function(req, res) {
-    res.sendStatus(500);
+    var entryTitle = decodeURIComponent(req.params.title);
+    Entry.find({title: entryTitle}, function(err, entries) {
+      if (entries.length === 0) {
+        res.sendStatus(400);
+      } else {
+        Entry.update({title: entryTitle}, {$inc: {votes: 1}}, function(err) {
+          if (err) {
+            res.sendStatus(500);
+          } else {
+            res.sendStatus(200);
+          }
+        });
+      }
+    });
+
   });
 
 var apiServer = app.listen(8080, function() {

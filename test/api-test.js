@@ -170,10 +170,25 @@ describe("Blog API", function() {
   describe("/api/vote/:title", function() {
     describe("PATCH", function() {
       it("should, with matching Entry by URI encoded title, respond with 200 and increment the votes", function(done) {
-
+        chai.request("http://localhost:8080")
+          .patch("/api/vote/Old%20Entry")
+          .end(function(err, res) {
+            expect(err).to.eql(null);
+            expect(res).to.have.status(200);
+            Entry.find({title: oldEntryObject.title}, function(err, entries) {
+              expect(entries[0].votes).to.eql(8);
+              done();
+            });
+          });
       });
       it("should, without matching Entry by URI encoded title, respond with 400 (bad request)", function(done) {
-
+        chai.request("http://localhost:8080")
+          .patch("/api/vote/Fake%20Entry")
+          .end(function(err, res) {
+            expect(err).to.eql(null);
+            expect(res).to.have.status(400);
+            done();
+          });
       });
     });
   });
