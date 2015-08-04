@@ -1,5 +1,5 @@
 "use strict";
-var apiServer = require(__dirname + "/../api");
+var server = require(__dirname + "/../server");
 var Entry = require(__dirname + "/../lib/model");
 
 var mongoose = require("mongoose");
@@ -54,7 +54,7 @@ describe("Blog API", function() {
   //After all tests are over, close the database connection and the server.
   after(function(done) {
     mongoose.connection.close();
-    apiServer.close();
+    server.close();
     done();
   });
 

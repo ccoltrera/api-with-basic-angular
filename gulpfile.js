@@ -4,8 +4,7 @@ var gulp = require("gulp");
 var mocha = require("gulp-mocha");
 var jshint = require("gulp-jshint");
 var jscs = require("gulp-jscs");
-
-gulp.task("default", ["test","lint","jscs"]);
+var webpack = require("gulp-webpack");
 
 gulp.task("test", function() {
   return gulp.src("./test/*test.js")
@@ -18,11 +17,31 @@ gulp.task("lint", function() {
               .pipe(jshint.reporter("default"));
 });
 
-gulp.task("watch", function(){
-  gulp.watch(["./*.js", "./lib/*.js", "./test/*.js"], ["test", "lint", "jscs"]);
-});
-
 gulp.task("jscs", function() {
   return gulp.src(["./*.js", "./lib/*.js", "./test/*.js"])
               .pipe(jscs());
+});
+
+// Uses webpack to bundle all our stuff together?
+gulp.task("webpack", function() {
+  return gulp.src("app/js/client.js")
+    .pipe(webpack({
+      output: {
+        filename: "bundle.js"
+      }
+    }))
+    .pipe(gulp.dest("public/"));
+});
+
+// Copies all our HTML files over to the static served folder
+gulp.task("copy", function() {
+  return gulp.src("app/**/*.html")
+    .pipe(gulp.dest("public/"));
+});
+
+gulp.task("build", ["webpack", "copy"]);
+
+gulp.task("watch", function(){
+  gulp.watch(["app/**/**"], ["webpack", "copy"]);
+  gulp.watch(["./*.js", "./lib/*.js", "./test/*.js"], ["test", "lint", "jscs"]);
 });
