@@ -37,7 +37,7 @@ describe("Blog API", function() {
   //And add an Entry to the DB
   beforeEach(function(done) {
     var oldEntry = new Entry(oldEntryObject);
-    oldEntry.save(function(err, oldEntry) {
+    oldEntry.save(function(err, oldEntryDoc) {
       if (err) {
         console.error(err);
       } else {
@@ -58,11 +58,11 @@ describe("Blog API", function() {
     done();
   });
 
-  describe("/api/entry", function() {
+  describe("/api/entries", function() {
     describe("POST", function() {
       it("should, with unique title, respond with 201 (created) and add Entry to the DB", function(done) {
         chai.request("http://localhost:8080")
-          .post("/api/entry")
+          .post("/api/entries")
           .send(newEntryObject)
           .end(function(err, res) {
             expect(err).to.eql(null);
@@ -76,7 +76,7 @@ describe("Blog API", function() {
       });
       it("should, with duplicate title, respond with 409 (conflict)", function(done) {
         chai.request("http://localhost:8080")
-          .post("/api/entry")
+          .post("/api/entries")
           .send(oldEntryObject)
           .end(function(err, res) {
             expect(err).to.eql(null);
@@ -85,13 +85,30 @@ describe("Blog API", function() {
           });
       });
     });
+    describe("GET", function() {
+      //And add an Entry to the DB
+      beforeEach(function(done) {
+        var newEntry = new Entry(newEntryObject);
+        newEntry.save(function(err, newEntryDoc) {
+          if (err) {
+            console.error(err);
+          } else {
+            done();
+          }
+        });
+      });
+      it("should get all entries", function(done) {
+        chai.request("http://localhost:8080")
+          .get("/api/entries")
+      });
+    });
   });
 
-  describe("/api/entry/:title", function() {
+  describe("/api/entries/:title", function() {
     describe("GET", function() {
       it("should, with matching Entry by URI encoded title, respond with 200, and that Entry as JSON", function(done) {
         chai.request("http://localhost:8080")
-          .get("/api/entry/Old%20Entry")
+          .get("/api/entries/Old%20Entry")
           .end(function(err, res) {
             expect(err).to.eql(null);
             expect(res).to.have.status(200);
@@ -102,7 +119,7 @@ describe("Blog API", function() {
       });
       it("should, without matching Entry by URI encoded title, respond with 404", function(done) {
         chai.request("http://localhost:8080")
-          .get("/api/entry/Fake%20Entry")
+          .get("/api/entries/Fake%20Entry")
           .end(function(err, res) {
             expect(err).to.eql(null);
             expect(res).to.have.status(404);
@@ -114,7 +131,7 @@ describe("Blog API", function() {
     describe("PUT", function() {
       it("should, with matching Entry by URI encoded title, respond with 200 and overwrite that Entry", function(done) {
         chai.request("http://localhost:8080")
-          .put("/api/entry/Old%20Entry")
+          .put("/api/entries/Old%20Entry")
           .send(editedEntryObject)
           .end(function(err, res) {
             expect(err).to.eql(null);
@@ -128,7 +145,7 @@ describe("Blog API", function() {
       });
       it("should, without matching Entry by URI encoded title, respond with 201 (created) and add Entry to the DB", function(done) {
         chai.request("http://localhost:8080")
-          .put("/api/entry/New%20Entry")
+          .put("/api/entries/New%20Entry")
           .send(newEntryObject)
           .end(function(err, res) {
             expect(err).to.eql(null);
@@ -144,7 +161,7 @@ describe("Blog API", function() {
     describe("DELETE", function() {
       it("should, with matching Entry by URI encoded title, respond with 200 and delete that Entry", function(done) {
         chai.request("http://localhost:8080")
-          .delete("/api/entry/Old%20Entry")
+          .delete("/api/entries/Old%20Entry")
           .end(function(err, res) {
             expect(err).to.eql(null);
             expect(res).to.have.status(200);
@@ -157,7 +174,7 @@ describe("Blog API", function() {
       });
       it("should, without matching Entry by URI encoded title, respond with 400 (bad request)", function(done) {
         chai.request("http://localhost:8080")
-          .delete("/api/entry/Fake%20Entry")
+          .delete("/api/entries/Fake%20Entry")
           .end(function(err, res) {
             expect(err).to.eql(null);
             expect(res).to.have.status(400);
@@ -167,11 +184,11 @@ describe("Blog API", function() {
     });
   });
 
-  describe("/api/vote/:title", function() {
+  describe("/api/votes/:title", function() {
     describe("POST", function() {
       it("should, with matching Entry by URI encoded title, respond with 200 and increment the votes", function(done) {
         chai.request("http://localhost:8080")
-          .post("/api/vote/Old%20Entry")
+          .post("/api/votes/Old%20Entry")
           .end(function(err, res) {
             expect(err).to.eql(null);
             expect(res).to.have.status(200);
@@ -183,7 +200,7 @@ describe("Blog API", function() {
       });
       it("should, without matching Entry by URI encoded title, respond with 400 (bad request)", function(done) {
         chai.request("http://localhost:8080")
-          .post("/api/vote/Fake%20Entry")
+          .post("/api/votes/Fake%20Entry")
           .end(function(err, res) {
             expect(err).to.eql(null);
             expect(res).to.have.status(400);
