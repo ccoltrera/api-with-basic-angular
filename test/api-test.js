@@ -100,6 +100,13 @@ describe("Blog API", function() {
       it("should get all entries", function(done) {
         chai.request("http://localhost:8080")
           .get("/api/entries")
+          .end(function(err, res) {
+            expect(err).to.eql(null);
+            expect(res).to.have.status(200);
+            expect(res).to.be.json;
+            expect(res.body.length).to.eql(2);
+            done();
+          });
       });
     });
   });
