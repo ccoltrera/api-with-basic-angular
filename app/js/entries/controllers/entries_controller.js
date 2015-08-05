@@ -26,7 +26,7 @@ module.exports = function(app) {
       $http.post("/api/entries", entry)
         .then(function(res) {
           // success
-          $scope.entries.push(res.body);
+          $scope.entries.push(res.data);
         }, function(res) {
           // error
           errorHandler(res);
@@ -47,11 +47,13 @@ module.exports = function(app) {
     $scope.edit = function(entry) {
       entry.editing = true;
       entry.oldBody = entry.entryBody;
+      entry.oldTitle = entry.title;
     }
 
     $scope.cancelEdit = function(entry) {
       entry.editing = false;
       entry.entryBody = entry.oldBody;
+      entry.title = entry.oldTitle;
     }
 
     $scope.update = function(entry) {

@@ -68,6 +68,8 @@ describe("Blog API", function() {
           .send(newEntryObject)
           .end(function(err, res) {
             expect(err).to.eql(null);
+            expect(res).to.be.json;
+            expect(res.body.title).to.eql(newEntryObject.title);
             expect(res).to.have.status(200);
             //Check to ensure that the Entry was added
             Entry.find(newEntryObject, function(err, entries) {
