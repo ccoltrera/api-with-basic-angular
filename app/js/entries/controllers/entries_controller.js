@@ -7,6 +7,17 @@ function errorHandler(res) {
 
 module.exports = function(app) {
   app.controller("entryController", ["$scope", "$http", function($scope, $http) {
+    $scope.user = "";
+    $scope.newEntry = {};
+
+    $scope.reader = function() {
+      $scope.user = "reader";
+    }
+
+    $scope.writer = function() {
+      $scope.user = "writer";
+    }
+
     $scope.entries = [];
 
 
@@ -22,7 +33,7 @@ module.exports = function(app) {
     };
 
     $scope.create = function(entry) {
-      $scope.newEntry = null;
+      $scope.newEntry = {};
       $http.post("/api/entries", entry)
         .then(function(res) {
           // success
@@ -72,6 +83,7 @@ module.exports = function(app) {
 
     $scope.vote = function(entry) {
       entry.votes ++;
+      entry.voted = true;
       $http.post("/api/votes/" + entry._id)
         .then(function(res) {
           // success

@@ -9,19 +9,29 @@
   <main data-ng-controller="entryController" data-ng-init="getAll()">
     <h2>Simple Personal Blog! With Votes!</h2>
     <hr>
-    <form name="newEntryForm" data-ng-submit="create(newEntry)">
-      <p>
-        <label for="newEntryTitle">Title:</label>
-        <input type="text" required name="newEntryTitle" data-ng-model="newEntry.title">
-      </p>
-      <p>
-        <label for="newEntryContent">Entry:</label>
-        <input type="text" required name="newEntryContent" data-ng-model="newEntry.entryBody">
-      </p>
-      <button type="submit" data-ng-disabled="newEntryForm.$invalid">Post New Entry</button>
-    </form>
-    <hr>
-    <article id="entryList" data-ng-repeat="entry in entries">
+    <div data-ng-if="!user">
+      <button data-ng-click="reader()">I'm a reader</button>
+      <button data-ng-click="writer()">I'm a writer</button>
+    </div>
+    <div data-ng-if="user==='writer'">
+      <h3>New Entry</h3>
+      <form name="newEntryForm" data-ng-submit="create(newEntry)">
+        <p>
+          <label for="newEntryTitle">Title:</label>
+        </p>
+        <p>
+          <input type="text" required name="newEntryTitle" data-ng-model="newEntry.title">
+        </p>
+        <p>
+          <label for="newEntryContent">Entry:</label>
+        </p>
+        <p>
+          <textarea cols="40" rows="5" required name="newEntryContent" data-ng-model="newEntry.entryBody"></textarea>
+        </p>
+        <button type="submit" data-ng-disabled="newEntryForm.$invalid">Post New Entry</button>
+      </form>
+      <hr>
+      <article id="entryList" data-ng-repeat="entry in entries">
         <div data-ng-if="!entry.editing">
           <h3>{{entry.title}}</h3>
           <p>{{entry.entryBody}}</p>
@@ -34,11 +44,29 @@
           <button type="submit">Update</button>
           <button data-ng-click="cancelEdit(entry)">Cancel</button>
         </form>
-      <p>Date: {{entry.date}}</p>
-      <p>Votes: {{entry.votes}}</p>
-      <button data-ng-click="vote(entry)">Vote!</button><button data-ng-click="destroy(entry)">Delete Entry</button>
-      <hr>
-    </article>
+        <p>Date: {{entry.date}}</p>
+        <p>
+          Votes: {{entry.votes}}
+        </p>
+
+        <button data-ng-click="destroy(entry)">Delete Entry</button>
+        <hr>
+      </article>
+    </div>
+
+    <div data-ng-if="user==='reader'">
+      <article id="entryList" data-ng-repeat="entry in entries">
+        <h3>{{entry.title}}</h3>
+        <p>{{entry.entryBody}}</p>
+        <p>Date: {{entry.date}}</p>
+        <p>
+          Votes: {{entry.votes}}
+          <button data-ng-click="vote(entry)" data-ng-if="!entry.voted">Vote!</button>
+        </p>
+        <hr>
+      </article>
+    </div>
+
   </main>
   <script type="text/javascript" src="bundle.js"></script>
 </body>
