@@ -19,7 +19,7 @@ app.route("/api/entry/:title")
   .delete(router.entry.title.DELETE);
 
 app.route("/api/vote/:title")
-  .patch(router.vote.title.PATCH);
+  .post(router.vote.title.POST);
 
 var apiServer = app.listen(8080, function() {
   console.log("Server running on http://localhost:8080");
