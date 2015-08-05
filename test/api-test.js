@@ -13,19 +13,21 @@ chai.use(chaiHttp);
 describe("Blog API", function() {
   var oldEntryObject = {
     date: new Date(),
+    _id: new mongoose.Types.ObjectId(),
     title: "Old Entry",
-    content: "I am old. So old. So very old.",
+    entryBody: "I am old. So old. So very old.",
     votes: 7
   };
   var newEntryObject = {
     date: new Date(),
+    _id: new mongoose.Types.ObjectId(),
     title: "New Entry",
-    content: "I am new, so very new!"
+    entryBody: "I am new, so very new!"
   };
   var editedEntryObject = {
     date: new Date(),
     title: "Edited Entry",
-    content: "Nicely edited!"
+    entryBody: "Nicely edited!"
   };
 
   //Ensure tests wait until the connection to the DB is open.
@@ -66,6 +68,8 @@ describe("Blog API", function() {
           .send(newEntryObject)
           .end(function(err, res) {
             expect(err).to.eql(null);
+            expect(res).to.be.json;
+            expect(res.body.title).to.eql(newEntryObject.title);
             expect(res).to.have.status(200);
             //Check to ensure that the Entry was added
             Entry.find(newEntryObject, function(err, entries) {
@@ -111,11 +115,11 @@ describe("Blog API", function() {
     });
   });
 
-  describe("/api/entries/:title", function() {
+  describe("/api/entries/:id", function() {
     describe("GET", function() {
-      it("should, with matching Entry by URI encoded title, respond with 200, and that Entry as JSON", function(done) {
+      it("should, with matching Entry by _id, respond with 200, and that Entry as JSON", function(done) {
         chai.request("http://localhost:8080")
-          .get("/api/entries/Old%20Entry")
+          .get("/api/entries/" + oldEntryObject._id)
           .end(function(err, res) {
             expect(err).to.eql(null);
             expect(res).to.have.status(200);
@@ -124,9 +128,9 @@ describe("Blog API", function() {
             done();
           });
       });
-      it("should, without matching Entry by URI encoded title, respond with 404", function(done) {
+      it("should, without matching Entry by _id, respond with 404", function(done) {
         chai.request("http://localhost:8080")
-          .get("/api/entries/Fake%20Entry")
+          .get("/api/entries/" + new mongoose.Types.ObjectId())
           .end(function(err, res) {
             expect(err).to.eql(null);
             expect(res).to.have.status(404);
@@ -136,23 +140,23 @@ describe("Blog API", function() {
     });
 
     describe("PUT", function() {
-      it("should, with matching Entry by URI encoded title, respond with 200 and overwrite that Entry", function(done) {
+      it("should, with matching Entry by _id, respond with 200 and overwrite that Entry", function(done) {
         chai.request("http://localhost:8080")
-          .put("/api/entries/Old%20Entry")
+          .put("/api/entries/" + oldEntryObject._id)
           .send(editedEntryObject)
           .end(function(err, res) {
             expect(err).to.eql(null);
             expect(res).to.have.status(200);
-            Entry.find(editedEntryObject, function(err, entries) {
-              //Votes should reset to the default, because it's a complete overwrite
-              expect(entries[0].votes).to.eql(0);
+            Entry.find({_id: oldEntryObject._id}, function(err, entries) {
+              expect(entries[0].title).to.eql(editedEntryObject.title);
+              expect(entries[0].body).to.eql(editedEntryObject.body);
               done();
             });
           });
       });
-      it("should, without matching Entry by URI encoded title, respond with 201 (created) and add Entry to the DB", function(done) {
+      it("should, without matching Entry by _id, respond with 201 (created) and add Entry to the DB", function(done) {
         chai.request("http://localhost:8080")
-          .put("/api/entries/New%20Entry")
+          .put("/api/entries/" + newEntryObject._id)
           .send(newEntryObject)
           .end(function(err, res) {
             expect(err).to.eql(null);
@@ -166,9 +170,9 @@ describe("Blog API", function() {
     });
 
     describe("DELETE", function() {
-      it("should, with matching Entry by URI encoded title, respond with 200 and delete that Entry", function(done) {
+      it("should, with matching Entry by _id, respond with 200 and delete that Entry", function(done) {
         chai.request("http://localhost:8080")
-          .delete("/api/entries/Old%20Entry")
+          .delete("/api/entries/" + oldEntryObject._id)
           .end(function(err, res) {
             expect(err).to.eql(null);
             expect(res).to.have.status(200);
@@ -179,9 +183,9 @@ describe("Blog API", function() {
           });
 
       });
-      it("should, without matching Entry by URI encoded title, respond with 400 (bad request)", function(done) {
+      it("should, without matching Entry by _id, respond with 400 (bad request)", function(done) {
         chai.request("http://localhost:8080")
-          .delete("/api/entries/Fake%20Entry")
+          .delete("/api/entries/" + new mongoose.Types.ObjectId())
           .end(function(err, res) {
             expect(err).to.eql(null);
             expect(res).to.have.status(400);
@@ -191,23 +195,23 @@ describe("Blog API", function() {
     });
   });
 
-  describe("/api/votes/:title", function() {
+  describe("/api/votes/:id", function() {
     describe("POST", function() {
-      it("should, with matching Entry by URI encoded title, respond with 200 and increment the votes", function(done) {
+      it("should, with matching Entry by _id, respond with 200 and increment the votes", function(done) {
         chai.request("http://localhost:8080")
-          .post("/api/votes/Old%20Entry")
+          .post("/api/votes/" + oldEntryObject._id)
           .end(function(err, res) {
             expect(err).to.eql(null);
             expect(res).to.have.status(200);
-            Entry.find({title: oldEntryObject.title}, function(err, entries) {
+            Entry.find({_id: oldEntryObject._id}, function(err, entries) {
               expect(entries[0].votes).to.eql(8);
               done();
             });
           });
       });
-      it("should, without matching Entry by URI encoded title, respond with 400 (bad request)", function(done) {
+      it("should, without matching Entry by _id, respond with 400 (bad request)", function(done) {
         chai.request("http://localhost:8080")
-          .post("/api/votes/Fake%20Entry")
+          .post("/api/votes/" + new mongoose.Types.ObjectId())
           .end(function(err, res) {
             expect(err).to.eql(null);
             expect(res).to.have.status(400);
