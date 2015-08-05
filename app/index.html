@@ -5,14 +5,36 @@
 
   <title>Document</title>
 </head>
-<body data-ng-app="blogApp">
-  <main data-ng-controller="blogController">
-    <h1>Blog App</h1>
-    <h2>So simple! Just write posts, and visitors can vote on them!</h2>
-    <p>[{{blogPost}}]</p>
-    <input type="text" data-ng-model="blogPost">
+<body data-ng-app="entryApp">
+  <main data-ng-controller="entryController" data-ng-init="getAll()">
+    <form name="newEntryForm" data-ng-submit="create(newEntry)">
+      <label for="newEntryTitle">Title:</label>
+      <input type="text" required name="newEntryTitle" data-ng-model="newEntry.title">
+      <label for="newEntryContent">Body:</label>
+      <input type="text" required name="newEntryContent" data-ng-model="newEntry.entryBody">
 
-    <script type="text/javascript" src="bundle.js"></script>
+      <button type="submit" data-ng-disabled="newEntryForm.$invalid">Post New Entry</button>
+    </form>
+    <article id="entryList" data-ng-repeat="entry in entries">
+      <hr>
+      <h3>{{entry.title}}</h3>
+      <p>
+        <div data-ng-if="!entry.editing">
+          <p>{{entry.entryBody}}</p>
+          <button data-ng-click="edit(entry)">Update</button>
+        </div>
+
+        <form data-ng-if="entry.editing" name="{{entry.title}}_form" data-ng-submit="update(entry)">
+          <p><input type="text" data-ng-model="entry.entryBody"></p>
+          <button type="submit">Update</button>
+          <button data-ng-click="cancelEdit(entry)">Cancel</button>
+        </form>
+      </p>
+      <p>{{entry.date}}</p>
+      <button data-ng-click="destroy(entry)">Delete Entry</button>
+      <hr>
+    </article>
   </main>
+  <script type="text/javascript" src="bundle.js"></script>
 </body>
 </html>

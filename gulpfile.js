@@ -43,5 +43,4 @@ gulp.task("build", ["webpack", "copy"]);
 
 gulp.task("watch", function(){
   gulp.watch(["app/**/**"], ["webpack", "copy"]);
-  gulp.watch(["./*.js", "./lib/*.js", "./test/*.js"], ["test", "lint", "jscs"]);
 });
