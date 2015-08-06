@@ -69,15 +69,16 @@ module.exports = function(app) {
 
     $scope.update = function(entry) {
       entry.editing = false;
+      entry.dateEdited = new Date();
       $http.put("/api/entries/" + entry._id, entry)
         .then(function(res) {
           // success
-
+          $scope.entries[$scope.entries.indexOf(entry)] = res.data;
         }, function(res) {
           // error
           errorHandler(res);
           // restore old entryBody
-          entry.entryBody = entry.oldBody;
+          $scope.entries[$scope.entries.indexOf(entry)].entryBody = $scope.entries[$scope.entries.indexOf(entry)].oldBody;
         });
     };
 
@@ -92,7 +93,7 @@ module.exports = function(app) {
           // error
           errorHandler(res);
           // restore old votes
-          entry.votes --;
+          $scope.entries[$scope.entries.indexOf(entry)].votes --;
         });
     };
   }]);

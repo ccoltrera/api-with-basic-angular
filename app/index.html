@@ -35,21 +35,28 @@
         <div data-ng-if="!entry.editing">
           <h3>{{entry.title}}</h3>
           <p>{{entry.entryBody}}</p>
-          <button data-ng-click="edit(entry)">Update</button>
+          <button data-ng-click="edit(entry)">Edit</button>
         </div>
 
-        <form data-ng-if="entry.editing" name="{{entry.title}}_form" data-ng-submit="update(entry)">
-          <h3><input type="text" data-ng-model="entry.title"></h3>
-          <p><input type="text" data-ng-model="entry.entryBody"></p>
-          <button type="submit">Update</button>
+        <form data-ng-if="entry.editing" name="{{entry._id}}form" data-ng-submit="update(entry)">
+          <h3><input type="text" required name="entryTitle" data-ng-model="entry.title"></h3>
+          <p><textarea cols="40" rows="5" required name="entryContent" data-ng-model="entry.entryBody"></textarea></p>
+          <button data-ng-disabled="{{entry._id}}form.$invalid" type="submit">Save</button>
           <button data-ng-click="cancelEdit(entry)">Cancel</button>
         </form>
-        <p>Date: {{entry.date}}</p>
+        <p>Date Posted: {{entry.datePosted}}</p>
+        <p data-ng-if="entry.dateEdited">Date Edited: {{entry.dateEdited}}</p>
         <p>
           Votes: {{entry.votes}}
         </p>
 
-        <button data-ng-click="destroy(entry)">Delete Entry</button>
+        <button data-ng-click="entry.checking = true" data-ng-if="!entry.checking">Delete Entry</button>
+        <div data-ng-if="entry.checking">
+          Are you sure?
+          <button data-ng-click="destroy(entry)">Yes</button>
+          <button data-ng-click="entry.checking = false">No</button>
+        </div>
+
         <hr>
       </article>
     </div>
@@ -58,7 +65,8 @@
       <article id="entryList" data-ng-repeat="entry in entries">
         <h3>{{entry.title}}</h3>
         <p>{{entry.entryBody}}</p>
-        <p>Date: {{entry.date}}</p>
+        <p>Date Posted: {{entry.datePosted}}</p>
+        <p data-ng-if="entry.dateEdited">Date Edited: {{entry.dateEdited}}</p>
         <p>
           Votes: {{entry.votes}}
           <button data-ng-click="vote(entry)" data-ng-if="!entry.voted">Vote!</button>
