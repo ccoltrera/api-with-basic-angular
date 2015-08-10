@@ -14,7 +14,7 @@ module.exports = function(app) {
       $http.post("/api/entries", entry)
         .then(function(res) {
           // success
-          $scope.entries.push(res.data);
+          $scope.entries.unshift(res.data);
         }, function(res) {
           // error
           errorHandler(res);
