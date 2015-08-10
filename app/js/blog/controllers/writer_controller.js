@@ -4,13 +4,12 @@ module.exports = function(app) {
   app.controller("writerController", ["$scope", "$http", function($scope, $http) {
 
     $scope.errors = [];
+    $scope.newEntry = {};
 
     function errorHandler(res) {
       $scope.errors.push({msg: "could not complete your request"});
       console.log(res.data)
     }
-
-    $scope.newEntry = {};
 
     $scope.create = function(entry) {
       $scope.newEntry = {};
@@ -21,8 +20,8 @@ module.exports = function(app) {
         }, function(res) {
           // error
           errorHandler(res);
-          // remove entry that failed to save
-          $scope.$parent.entries.splice($scope.$parent.entries.indexOf(entry), 1);
+          // // remove entry that failed to save
+          // $scope.$parent.entries.splice($scope.$parent.entries.indexOf(entry), 1);
         });
     };
 
@@ -37,8 +36,8 @@ module.exports = function(app) {
         }, function(res) {
           // error
           errorHandler(res);
-          // restore entry that failed to delete
-          $scope.$parent.entries.splice(indexOfEntry, 0, entry);
+          // // restore entry that failed to delete
+          // $scope.$parent.entries.splice(indexOfEntry, 0, entry);
         });
     };
 
@@ -65,7 +64,9 @@ module.exports = function(app) {
           // error
           errorHandler(res);
           // restore old entryBody
-          $scope.$parent.entries[$scope.$parent.entries.indexOf(entry)].entryBody = $scope.$parent.entries[$scope.$parent.entries.indexOf(entry)].oldBody;
+          entry.entryBody = entry.oldBody;
+          // restore old title
+          entry.title = entry.oldTitle;
         });
     };
   }]);

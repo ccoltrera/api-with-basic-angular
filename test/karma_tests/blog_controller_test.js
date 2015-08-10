@@ -67,13 +67,11 @@ describe("blog controller", function() {
     it("should set var user to 'reader' when reader is called", function() {
       blogScope.reader();
       expect(blogScope.user).toBe("reader");
-    })
+    });
 
     it("should set var user to 'writer' when writer is called", function() {
       blogScope.writer();
       expect(blogScope.user).toBe("writer");
-    })
-
+    });
   });
-
 });
