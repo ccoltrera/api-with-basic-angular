@@ -12,14 +12,12 @@ chai.use(chaiHttp);
 
 describe("Blog API", function() {
   var oldEntryObject = {
-    date: new Date(),
     _id: new mongoose.Types.ObjectId(),
     title: "Old Entry",
     entryBody: "I am old. So old. So very old.",
     votes: 7
   };
   var newEntryObject = {
-    date: new Date(),
     _id: new mongoose.Types.ObjectId(),
     title: "New Entry",
     entryBody: "I am new, so very new!"

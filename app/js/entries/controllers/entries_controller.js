@@ -7,6 +7,17 @@ function errorHandler(res) {
 
 module.exports = function(app) {
   app.controller("entryController", ["$scope", "$http", function($scope, $http) {
+    $scope.user = "";
+    $scope.newEntry = {};
+
+    $scope.reader = function() {
+      $scope.user = "reader";
+    }
+
+    $scope.writer = function() {
+      $scope.user = "writer";
+    }
+
     $scope.entries = [];
 
 
@@ -22,7 +33,7 @@ module.exports = function(app) {
     };
 
     $scope.create = function(entry) {
-      $scope.newEntry = null;
+      $scope.newEntry = {};
       $http.post("/api/entries", entry)
         .then(function(res) {
           // success
@@ -58,20 +69,22 @@ module.exports = function(app) {
 
     $scope.update = function(entry) {
       entry.editing = false;
+      entry.dateEdited = new Date();
       $http.put("/api/entries/" + entry._id, entry)
         .then(function(res) {
           // success
-
+          $scope.entries[$scope.entries.indexOf(entry)] = res.data;
         }, function(res) {
           // error
           errorHandler(res);
           // restore old entryBody
-          entry.entryBody = entry.oldBody;
+          $scope.entries[$scope.entries.indexOf(entry)].entryBody = $scope.entries[$scope.entries.indexOf(entry)].oldBody;
         });
     };
 
     $scope.vote = function(entry) {
       entry.votes ++;
+      entry.voted = true;
       $http.post("/api/votes/" + entry._id)
         .then(function(res) {
           // success
@@ -80,7 +93,7 @@ module.exports = function(app) {
           // error
           errorHandler(res);
           // restore old votes
-          entry.votes --;
+          $scope.entries[$scope.entries.indexOf(entry)].votes --;
         });
     };
   }]);
