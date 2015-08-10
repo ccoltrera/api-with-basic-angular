@@ -6,7 +6,7 @@ function errorHandler(res) {
 }
 
 module.exports = function(app) {
-  app.controller("entriesController", ["$scope", "$http", function($scope, $http) {
+  app.controller("blogController", ["$scope", "$http", function($scope, $http) {
     $scope.user = "";
 
     $scope.reader = function() {
@@ -19,10 +19,10 @@ module.exports = function(app) {
 
     $scope.logout = function() {
       $scope.user = "";
+      $scope.getAll();
     }
 
     $scope.entries = [];
-
 
     $scope.getAll = function() {
       $http.get("/api/entries")

@@ -45,6 +45,8 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	__webpack_require__(1);
+	__webpack_require__(9);
+	__webpack_require__(10);
 
 
 /***/ },
@@ -53,25 +55,54 @@
 
 	"use strict";
 	__webpack_require__(2);
-	__webpack_require__(6);
+	__webpack_require__(8);
 
-	describe("entries controller", function() {
+	describe("blog controller", function() {
 	  var $ControllerConstructor;
 	  var $httpBackend;
 	  var $scope;
 
-	  beforeEach(angular.mock.module("entriesApp"));
+	  beforeEach(angular.mock.module("blogApp"));
 
-	  beforeEach(angular.mock.inject(function($rootScope, $controller) {
-	    $scope = $rootScope.$new();
-	    $ControllerConstructor = $controller;
+	  beforeEach(angular.mock.inject(function(_$rootScope_, _$controller_) {
+	    $scope = _$rootScope_.$new();
+	    $ControllerConstructor = _$controller_;
 	  }));
 
 	  it("should be able to create a controller", function() {
-	    var entriesController = $ControllerConstructor("entriesController", { $scope: $scope});
+	    var entriesController = $ControllerConstructor("blogController", { $scope: $scope});
 	    expect(typeof entriesController).toBe("object");
 	    expect(typeof $scope.getAll).toBe("function");
 	    expect(Array.isArray($scope.entries)).toBe(true);
+	  });
+
+	  describe("REST functionality", function() {
+	    beforeEach(angular.mock.inject(function(_$httpBackend_, _$rootScope_) {
+	      $httpBackend = _$httpBackend_;
+	      $scope = _$rootScope_.$new();
+	      $ControllerConstructor("blogController", {$scope: $scope});
+	    }));
+
+	    afterEach(function() {
+	      $httpBackend.verifyNoOutstandingExpectation();
+	      $httpBackend.verifyNoOutstandingRequest();
+	    });
+
+	  it("should make a get request when getAll is called", function() {
+	      $httpBackend.expectGET("/api/entries").respond(200, [{
+	        datePosted: new Date,
+	        title: "what a title!",
+	        entryBody: "what an entry!",
+	        votes: 0,
+	        _id: 1
+	      }]);
+	      $scope.getAll();
+	      $httpBackend.flush();
+	      expect($scope.entries.length).toBe(1);
+	      expect($scope.entries[0].title).toBe("what a title!");
+	      expect($scope.entries[0]._id).toBe(1);
+	  });
+
 	  });
 
 	});
@@ -85,7 +116,7 @@
 
 	__webpack_require__(3);
 
-	var entryApp = angular.module("entriesApp", []);
+	var entryApp = angular.module("blogApp", []);
 
 	__webpack_require__(4)(entryApp);
 
@@ -28467,6 +28498,8 @@
 
 	module.exports = function(app) {
 	  __webpack_require__(5)(app);
+	  __webpack_require__(6)(app);
+	  __webpack_require__(7)(app);
 	}
 
 
@@ -28482,9 +28515,8 @@
 	}
 
 	module.exports = function(app) {
-	  app.controller("entriesController", ["$scope", "$http", function($scope, $http) {
+	  app.controller("blogController", ["$scope", "$http", function($scope, $http) {
 	    $scope.user = "";
-	    $scope.newEntry = {};
 
 	    $scope.reader = function() {
 	      $scope.user = "reader";
@@ -28496,10 +28528,10 @@
 
 	    $scope.logout = function() {
 	      $scope.user = "";
+	      $scope.getAll();
 	    }
 
 	    $scope.entries = [];
-
 
 	    $scope.getAll = function() {
 	      $http.get("/api/entries")
@@ -28511,6 +28543,56 @@
 	          errorHandler(res);
 	        });
 	    };
+	  }]);
+	};
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	function errorHandler(res) {
+	  $scope.errors.push({msg: "could not complete your request"});
+	  console.log(res.data)
+	}
+
+	module.exports = function(app) {
+	  app.controller("readerController", ["$scope", "$http", function($scope, $http) {
+
+	    $scope.vote = function(entry) {
+	      entry.votes ++;
+	      entry.voted = true;
+	      $http.post("/api/votes/" + entry._id)
+	        .then(function(res) {
+	          // success
+
+	        }, function(res) {
+	          // error
+	          errorHandler(res);
+	          // restore old votes
+	          $scope.entries[$scope.entries.indexOf(entry)].votes --;
+	        });
+	    };
+	  }]);
+	};
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	function errorHandler(res) {
+	  $scope.errors.push({msg: "could not complete your request"});
+	  console.log(res.data)
+	}
+
+	module.exports = function(app) {
+	  app.controller("writerController", ["$scope", "$http", function($scope, $http) {
+	    $scope.newEntry = {};
 
 	    $scope.create = function(entry) {
 	      $scope.newEntry = {};
@@ -28561,27 +28643,12 @@
 	          $scope.entries[$scope.entries.indexOf(entry)].entryBody = $scope.entries[$scope.entries.indexOf(entry)].oldBody;
 	        });
 	    };
-
-	    $scope.vote = function(entry) {
-	      entry.votes ++;
-	      entry.voted = true;
-	      $http.post("/api/votes/" + entry._id)
-	        .then(function(res) {
-	          // success
-
-	        }, function(res) {
-	          // error
-	          errorHandler(res);
-	          // restore old votes
-	          $scope.entries[$scope.entries.indexOf(entry)].votes --;
-	        });
-	    };
 	  }]);
 	};
 
 
 /***/ },
-/* 6 */
+/* 8 */
 /***/ function(module, exports) {
 
 	/**
@@ -31021,6 +31088,18 @@
 
 	})(window, window.angular);
 
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	
 
 /***/ }
 /******/ ]);

@@ -50,7 +50,7 @@ module.exports = function(app) {
       $http.put("/api/entries/" + entry._id, entry)
         .then(function(res) {
           // success
-          $scope.$parent.entries[$scope.$parent.entries.indexOf(entry)] = res.data;
+          $scope.entries[$scope.entries.indexOf(entry)] = res.data;
         }, function(res) {
           // error
           errorHandler(res);
