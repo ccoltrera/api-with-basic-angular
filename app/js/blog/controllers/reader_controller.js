@@ -1,12 +1,15 @@
 "use strict";
 
-function errorHandler(res) {
-  $scope.errors.push({msg: "could not complete your request"});
-  console.log(res.data)
-}
-
 module.exports = function(app) {
+
   app.controller("readerController", ["$scope", "$http", function($scope, $http) {
+
+    $scope.errors = [];
+
+    function errorHandler(res) {
+      $scope.errors.push({msg: "could not complete your request"});
+      console.log(res.data)
+    }
 
     $scope.vote = function(entry) {
       entry.votes ++;
@@ -19,7 +22,7 @@ module.exports = function(app) {
           // error
           errorHandler(res);
           // restore old votes
-          $scope.entries[$scope.entries.indexOf(entry)].votes --;
+          $scope.$parent.entries[$scope.$parent.entries.indexOf(entry)].votes --;
         });
     };
   }]);

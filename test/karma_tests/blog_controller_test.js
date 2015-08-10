@@ -12,12 +12,12 @@ describe("blog controller", function() {
   beforeEach(angular.mock.inject(function(_$rootScope_, _$controller_) {
     blogScope = _$rootScope_.$new();
     $ControllerConstructor = _$controller_;
+    $ControllerConstructor("blogController", {$scope: blogScope});
   }));
 
   describe("REST functionality", function() {
     beforeEach(angular.mock.inject(function(_$httpBackend_, _$rootScope_) {
       $httpBackend = _$httpBackend_;
-      $ControllerConstructor("blogController", {$scope: blogScope});
     }));
 
     afterEach(function() {
@@ -40,7 +40,7 @@ describe("blog controller", function() {
         expect(blogScope.entries[0]._id).toBe(1);
     });
 
-      it("should make a get request and set var user to '' when logout is called", function() {
+    it("should make a get request and set var user to '' when logout is called", function() {
         blogScope.user = "reader";
         $httpBackend.expectGET("/api/entries").respond(200, [{
           datePosted: new Date,
@@ -63,11 +63,6 @@ describe("blog controller", function() {
     beforeEach(angular.mock.inject(function(_$rootScope_) {
       $ControllerConstructor("blogController", {$scope: blogScope});
     }));
-
-    afterEach(function() {
-      $httpBackend.verifyNoOutstandingExpectation();
-      $httpBackend.verifyNoOutstandingRequest();
-    });
 
     it("should set var user to 'reader' when reader is called", function() {
       blogScope.reader();

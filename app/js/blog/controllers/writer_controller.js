@@ -1,12 +1,15 @@
 "use strict";
 
-function errorHandler(res) {
-  $scope.errors.push({msg: "could not complete your request"});
-  console.log(res.data)
-}
-
 module.exports = function(app) {
   app.controller("writerController", ["$scope", "$http", function($scope, $http) {
+
+    $scope.errors = [];
+
+    function errorHandler(res) {
+      $scope.errors.push({msg: "could not complete your request"});
+      console.log(res.data)
+    }
+
     $scope.newEntry = {};
 
     $scope.create = function(entry) {
@@ -14,21 +17,28 @@ module.exports = function(app) {
       $http.post("/api/entries", entry)
         .then(function(res) {
           // success
-          $scope.entries.unshift(res.data);
+          $scope.$parent.entries.unshift(res.data);
         }, function(res) {
           // error
           errorHandler(res);
+          // remove entry that failed to save
+          $scope.$parent.entries.splice($scope.$parent.entries.indexOf(entry), 1);
         });
     };
 
     $scope.destroy = function(entry) {
+      // Save entry index, so that on server-side error post can be restored
+      var indexOfEntry = $scope.$parent.entries.indexOf(entry);
+
       $http.delete("/api/entries/" + entry._id)
         .then(function(res) {
           // success
-          $scope.entries.splice($scope.entries.indexOf(entry), 1);
+          $scope.$parent.entries.splice($scope.$parent.entries.indexOf(entry), 1);
         }, function(res) {
           // error
           errorHandler(res);
+          // restore entry that failed to delete
+          $scope.$parent.entries.splice(indexOfEntry, 0, entry);
         });
     };
 
@@ -50,12 +60,12 @@ module.exports = function(app) {
       $http.put("/api/entries/" + entry._id, entry)
         .then(function(res) {
           // success
-          $scope.entries[$scope.entries.indexOf(entry)] = res.data;
+          $scope.$parent.entries[$scope.$parent.entries.indexOf(entry)] = res.data;
         }, function(res) {
           // error
           errorHandler(res);
           // restore old entryBody
-          $scope.entries[$scope.entries.indexOf(entry)].entryBody = $scope.entries[$scope.entries.indexOf(entry)].oldBody;
+          $scope.$parent.entries[$scope.$parent.entries.indexOf(entry)].entryBody = $scope.$parent.entries[$scope.$parent.entries.indexOf(entry)].oldBody;
         });
     };
   }]);
