@@ -2,6 +2,6 @@
 
 require("angular/angular");
 
-var entryApp = angular.module("entryApp", []);
+var entryApp = angular.module("entriesApp", []);
 
 require("./entries/entries")(entryApp);

@@ -5,15 +5,18 @@
 
   <title>Document</title>
 </head>
-<body data-ng-app="entryApp">
-  <main data-ng-controller="entryController" data-ng-init="getAll()">
+<body data-ng-app="entriesApp">
+  <main data-ng-controller="entriesController" data-ng-init="getAll()">
     <h2>Simple Personal Blog! With Votes!</h2>
     <hr>
+    <div data-ng-if="user">
+      <button data-ng-click="logout()">Logout</button>
+    </div>
     <div data-ng-if="!user">
       <button data-ng-click="reader()">I'm a reader</button>
       <button data-ng-click="writer()">I'm a writer</button>
     </div>
-    <div data-ng-if="user==='writer'">
+    <div data-ng-if="user==='writer'" data-ng-controller="writerController">
       <h3>New Entry</h3>
       <form name="newEntryForm" data-ng-submit="create(newEntry)">
         <p>
@@ -61,7 +64,7 @@
       </article>
     </div>
 
-    <div data-ng-if="user==='reader'">
+    <div data-ng-if="user==='reader'" data-ng-controller="readerController">
       <article id="entryList" data-ng-repeat="entry in entries">
         <h3>{{entry.title}}</h3>
         <p>{{entry.entryBody}}</p>
