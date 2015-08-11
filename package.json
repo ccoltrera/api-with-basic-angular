@@ -18,11 +18,15 @@
     "mongodb": "^2.0.39",
     "phantomjs": "^1.9.17"
   },
+  "scripts": {
+    "test": "gulp mochatest karmatest"
+  },
   "name": "single_resource_API",
   "version": "0.1.0",
   "dependencies": {
     "body-parser": "^1.13.2",
     "express": "^4.13.1",
+    "hallo": "^1.0.2",
     "mongoose": "^4.0.7"
   }
 }

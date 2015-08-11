@@ -1,6 +1,6 @@
 "use strict";
-var server = require(__dirname + "/../server");
-var Entry = require(__dirname + "/../lib/model");
+var server = require(__dirname + "/../../server");
+var Entry = require(__dirname + "/../../lib/model");
 
 var mongoose = require("mongoose");
 

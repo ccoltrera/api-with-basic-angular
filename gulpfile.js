@@ -7,8 +7,8 @@ var jscs = require("gulp-jscs");
 var webpack = require("gulp-webpack");
 var KarmaServer = require("karma").Server;
 
-gulp.task("test", function() {
-  return gulp.src("./test/*test.js")
+gulp.task("mochatest", function() {
+  return gulp.src("./test/mocha_tests/*test.js")
               .pipe(mocha({"reporter" : "progress"}));
 });
 
@@ -60,5 +60,6 @@ gulp.task("watch", function(){
   gulp.watch(["app/**/**"], ["webpack:dev", "copy"]);
 });
 
+gulp.task("test", ["mochatest", "karmatest"]);
 gulp.task("build", ["webpack:dev", "copy"]);
-gulp.task("default", ["karmatest", "build"]);
+gulp.task("default", ["test", "build"]);
