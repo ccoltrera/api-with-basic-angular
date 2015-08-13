@@ -8,7 +8,6 @@ module.exports = function(app) {
       templateUrl: "/js/blog/templates/entry_writer_template.html",
       scope: {
         save: "&",
-        name: "=",
         buttonText: "=",
         entry: "="
       }
