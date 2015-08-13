@@ -2,41 +2,26 @@
 
 module.exports = function(app) {
 
-  app.controller("blogController", ["$scope", "$http", function($scope, $http) {
+  app.controller("blogController", ["$scope", "$http", "$location", function(blogScope, $http, $location) {
 
-    $scope.errors = [];
+    blogScope.errors = [];
 
     function errorHandler(res) {
-      $scope.errors.push({msg: "could not complete your request"});
+      blogScope.errors.push({msg: "could not complete your request"});
       console.log(res.data)
     }
 
-    $scope.user = "";
+    blogScope.user = "";
 
-    $scope.reader = function() {
-      $scope.user = "reader";
+    blogScope.reader = function() {
+      blogScope.user = "reader";
+      $location.path("/reader");
     }
 
-    $scope.writer = function() {
-      $scope.user = "writer";
+    blogScope.writer = function() {
+      blogScope.user = "writer";
+      $location.path("/writer");
     }
 
-    $scope.logout = function() {
-      $scope.user = "";
-      $scope.getAll();
-    }
-
-    $scope.entries = [];
-
-    $scope.getAll = function() {
-      $http.get("/api/entries")
-        .then(function(res) {
-          // success
-          $scope.entries = res.data;
-        }, function(res) {
-          // error
-          errorHandler(res);
-        });
-    };
   }]);
 };

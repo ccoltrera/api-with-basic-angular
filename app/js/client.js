@@ -19,7 +19,10 @@ blogApp.config(["$routeProvider", function($routeProvider) {
       templateUrl: "/js/blog/views/writer_view.html",
       controller: "writerController"
     })
+    .when("/welcome", {
+      templateUrl: "/js/blog/views/welcome_view.html"
+    })
     .otherwise({
-      redirectTo: "/"
+      redirectTo: "/welcome"
     });
 }]);

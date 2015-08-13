@@ -1,0 +1,14 @@
+<section data-ng-init="getAll()">
+  <button data-ng-click="logout()">Logout</button>
+  <article id="entryList" data-ng-repeat="entry in entries">
+    <h3>{{entry.title}}</h3>
+    <p>{{entry.entryBody}}</p>
+    <p>Date Posted: {{entry.datePosted}}</p>
+    <p data-ng-if="entry.dateEdited">Date Edited: {{entry.dateEdited}}</p>
+    <p>
+      Votes: {{entry.votes}}
+      <button data-ng-click="vote(entry)" data-ng-if="!entry.voted">Vote!</button>
+    </p>
+    <hr>
+  </article>
+</section>

@@ -2,16 +2,30 @@
 
 module.exports = function(app) {
 
-  app.controller("readerController", ["$scope", "$http", function($scope, $http) {
-
-    $scope.errors = [];
+  app.controller("readerController", ["$scope", "$http", "$location", function(readerScope, $http, $location) {
 
     function errorHandler(res) {
-      $scope.errors.push({msg: "could not complete your request"});
+      readerScope.$parent.errors.push({msg: "could not complete your request"});
       console.log(res.data)
     }
 
-    $scope.vote = function(entry) {
+    readerScope.logout = function() {
+      $location.path("/welcome");
+      readerScope.$destroy();
+    }
+
+    readerScope.getAll = function() {
+      $http.get("/api/entries")
+        .then(function(res) {
+          // success
+          readerScope.entries = res.data;
+        }, function(res) {
+          // error
+          errorHandler(res);
+        });
+    };
+
+    readerScope.vote = function(entry) {
       entry.votes ++;
       entry.voted = true;
       $http.post("/api/votes/" + entry._id)
@@ -22,7 +36,7 @@ module.exports = function(app) {
           // error
           errorHandler(res);
           // restore old votes
-          $scope.$parent.entries[$scope.$parent.entries.indexOf(entry)].votes --;
+          readerScope.$parent.entries[readerScope.$parent.entries.indexOf(entry)].votes --;
         });
     };
   }]);

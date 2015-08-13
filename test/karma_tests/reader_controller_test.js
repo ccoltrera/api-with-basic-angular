@@ -44,20 +44,42 @@ describe("blog controller", function() {
       $httpBackend.verifyNoOutstandingRequest();
     });
 
+    it("should make a get request when getAll is called", function() {
+      $httpBackend.expectGET("/api/entries").respond(200, [{
+        datePosted: new Date,
+        title: "what a title!",
+        entryBody: "what an entry!",
+        votes: 0,
+        _id: 1
+      }]);
+      readerScope.getAll();
+      $httpBackend.flush();
+      expect(readerScope.entries.length).toBe(1);
+      expect(readerScope.entries[0].title).toBe("what a title!");
+      expect(readerScope.entries[0]._id).toBe(1);
+    });
+
     it("should make a post request when vote is called, and increment the votes on the entry", function() {
-        $httpBackend.expectPOST("/api/votes/2").respond(200);
-        readerScope.vote(blogScope.entries[1]);
-        $httpBackend.flush();
-        expect(blogScope.entries[0].votes).toBe(0);
-        expect(blogScope.entries[1].votes).toBe(2);
+      $httpBackend.expectPOST("/api/votes/2").respond(200);
+      readerScope.vote(blogScope.entries[1]);
+      $httpBackend.flush();
+      expect(blogScope.entries[0].votes).toBe(0);
+      expect(blogScope.entries[1].votes).toBe(2);
     });
 
     it("should make a post request when vote is called, but decrement the votes again if there's an error", function() {
-        $httpBackend.expectPOST("/api/votes/2").respond(500);
-        readerScope.vote(blogScope.entries[1]);
-        $httpBackend.flush();
-        expect(blogScope.entries[0].votes).toBe(0);
-        expect(blogScope.entries[1].votes).toBe(1);
+      $httpBackend.expectPOST("/api/votes/2").respond(500);
+      readerScope.vote(blogScope.entries[1]);
+      $httpBackend.flush();
+      expect(blogScope.entries[0].votes).toBe(0);
+      expect(blogScope.entries[1].votes).toBe(1);
+    });
+  });
+
+  describe("Non-REST functionality", function() {
+    it("should destroy the scope when logout is called", function() {
+      readerScope.logout();
+      expect(readerScope.$parent).toBe(null);
     });
   });
 });

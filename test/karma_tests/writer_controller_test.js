@@ -15,8 +15,9 @@ describe("blog controller", function() {
     writerScope = blogScope.$new();
     $ControllerConstructor = _$controller_;
     $ControllerConstructor("blogController", {$scope: blogScope});
+    $ControllerConstructor("writerController", {$scope: writerScope});
 
-    blogScope.entries = [{
+    writerScope.entries = [{
           datePosted: new Date,
           title: "what a title!",
           entryBody: "what an entry!",
@@ -30,8 +31,6 @@ describe("blog controller", function() {
           votes: 1,
           _id: 2
         }];
-
-    $ControllerConstructor("writerController", {$scope: writerScope});
   }));
 
   describe("REST functionality", function() {
@@ -42,6 +41,21 @@ describe("blog controller", function() {
     afterEach(function() {
       $httpBackend.verifyNoOutstandingExpectation();
       $httpBackend.verifyNoOutstandingRequest();
+    });
+
+    it("should make a get request when getAll is called", function() {
+        $httpBackend.expectGET("/api/entries").respond(200, [{
+          datePosted: new Date,
+          title: "what a title!",
+          entryBody: "what an entry!",
+          votes: 0,
+          _id: 1
+        }]);
+        writerScope.getAll();
+        $httpBackend.flush();
+        expect(writerScope.entries.length).toBe(1);
+        expect(writerScope.entries[0].title).toBe("what a title!");
+        expect(writerScope.entries[0]._id).toBe(1);
     });
 
     it("should make a post request when create is called", function() {
@@ -55,9 +69,9 @@ describe("blog controller", function() {
       writerScope.create({title: "send great title!", entryBody: "another great entry!"});
       $httpBackend.flush();
 
-      expect(blogScope.entries.length).toBe(3);
-      expect(blogScope.entries[0].title).toBe("another great title!");
-      expect(blogScope.entries[0]._id).toBe(3);
+      expect(writerScope.entries.length).toBe(3);
+      expect(writerScope.entries[0].title).toBe("another great title!");
+      expect(writerScope.entries[0]._id).toBe(3);
     });
 
     it("should make a delete request when destroy is called", function() {
@@ -71,7 +85,7 @@ describe("blog controller", function() {
 
       $httpBackend.flush();
 
-      expect(blogScope.entries.length).toBe(1);
+      expect(writerScope.entries.length).toBe(1);
     });
 
     it("should make a put request when update is called, and update entry", function() {
@@ -84,52 +98,57 @@ describe("blog controller", function() {
         }
       $httpBackend.expectPUT("/api/entries/2").respond(200, editedEntry);
 
-      blogScope.entries[1].oldBody = blogScope.entries[1].entryBody;
-      blogScope.entries[1].entryBody = "such an edited body";
+      writerScope.entries[1].oldBody = writerScope.entries[1].entryBody;
+      writerScope.entries[1].entryBody = "such an edited body";
 
-      writerScope.update(blogScope.entries[1]);
+      writerScope.update(writerScope.entries[1]);
       $httpBackend.flush();
 
-      expect(blogScope.entries[1].title).toBe(editedEntry.title);
+      expect(writerScope.entries[1].title).toBe(editedEntry.title);
     });
 
     it("should make a put request when update is called, but restore to the old entry on error", function() {
       $httpBackend.expectPUT("/api/entries/2").respond(500);
 
-      blogScope.entries[1].oldBody = blogScope.entries[1].entryBody;
-      blogScope.entries[1].entryBody = "such an edited body";
-      blogScope.entries[1].oldTitle = blogScope.entries[1].title;
-      blogScope.entries[1].title = "such an edited title";
+      writerScope.entries[1].oldBody = writerScope.entries[1].entryBody;
+      writerScope.entries[1].entryBody = "such an edited body";
+      writerScope.entries[1].oldTitle = writerScope.entries[1].title;
+      writerScope.entries[1].title = "such an edited title";
 
-      writerScope.update(blogScope.entries[1]);
+      writerScope.update(writerScope.entries[1]);
 
       $httpBackend.flush();
 
-      expect(blogScope.entries[1].title).toBe("another title!");
-      expect(blogScope.entries[1].entryBody).toBe("another entry!");
+      expect(writerScope.entries[1].title).toBe("another title!");
+      expect(writerScope.entries[1].entryBody).toBe("another entry!");
     });
   });
 
   describe("Non-REST functionality", function() {
 
     it("should set editing to true on an entry, and save its old body and title when edit is called", function() {
-      writerScope.edit(blogScope.entries[0]);
-      expect(blogScope.entries[0].editing).toBe(true);
-      expect(blogScope.entries[0].oldBody).toBe(blogScope.entries[0].entryBody);
-      expect(blogScope.entries[0].oldTitle).toBe(blogScope.entries[0].title);
+      writerScope.edit(writerScope.entries[0]);
+      expect(writerScope.entries[0].editing).toBe(true);
+      expect(writerScope.entries[0].oldBody).toBe(writerScope.entries[0].entryBody);
+      expect(writerScope.entries[0].oldTitle).toBe(writerScope.entries[0].title);
     });
 
     it("should set editing to false on an entry, and restore its old body and title when cancelEdit is called", function() {
-      blogScope.entries[0].editing = true;
-      blogScope.entries[0].oldBody = blogScope.entries[0].entryBody;
-      blogScope.entries[0].entryBody = "";
-      blogScope.entries[0].oldTitle = blogScope.entries[0].title;
-      blogScope.entries[0].title = "";
+      writerScope.entries[0].editing = true;
+      writerScope.entries[0].oldBody = writerScope.entries[0].entryBody;
+      writerScope.entries[0].entryBody = "";
+      writerScope.entries[0].oldTitle = writerScope.entries[0].title;
+      writerScope.entries[0].title = "";
 
-      writerScope.cancelEdit(blogScope.entries[0]);
-      expect(blogScope.entries[0].editing).toBe(false);
-      expect(blogScope.entries[0].entryBody).toBe(blogScope.entries[0].oldBody);
-      expect(blogScope.entries[0].title).toBe(blogScope.entries[0].oldTitle);
+      writerScope.cancelEdit(writerScope.entries[0]);
+      expect(writerScope.entries[0].editing).toBe(false);
+      expect(writerScope.entries[0].entryBody).toBe(writerScope.entries[0].oldBody);
+      expect(writerScope.entries[0].title).toBe(writerScope.entries[0].oldTitle);
+    });
+
+    it("should destroy the scope when logout is called", function() {
+      writerScope.logout();
+      expect(writerScope.$parent).toBe(null);
     });
   });
 });
