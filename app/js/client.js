@@ -12,15 +12,15 @@ require("./blog/blog")(blogApp);
 blogApp.config(["$routeProvider", function($routeProvider) {
   $routeProvider
     .when("/reader", {
-      templateUrl: "/js/blog/views/reader_view.html",
+      templateUrl: "/js/blog/templates/reader_view.html",
       controller: "readerController"
     })
     .when("/writer", {
-      templateUrl: "/js/blog/views/writer_view.html",
+      templateUrl: "/js/blog/templates/writer_view.html",
       controller: "writerController"
     })
     .when("/welcome", {
-      templateUrl: "/js/blog/views/welcome_view.html"
+      templateUrl: "/js/blog/templates/welcome_view.html"
     })
     .otherwise({
       redirectTo: "/welcome"

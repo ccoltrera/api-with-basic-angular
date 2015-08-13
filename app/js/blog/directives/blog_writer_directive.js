@@ -1,5 +1,11 @@
 "use strict";
 
 module.exports = function(app) {
-  // app.directive("readerDirective", function())
+  app.directive("blogWriter", function() {
+    return {
+      restrict: "AC",
+      replace: true,
+      templateUrl: "/js/blog/templates/blog_writer_template"
+    }
+  })
 };
