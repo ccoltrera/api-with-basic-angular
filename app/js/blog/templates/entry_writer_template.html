@@ -1,0 +1,9 @@
+<form name="name" data-ng-submit="save({entry: entry})">
+  <p>
+    <input type="text" required name="entryTitle" data-ng-model="entry.title">
+  </p>
+  <p>
+    <textarea cols="40" rows="5" required name="entryContent" data-ng-model="entry.entryBody"></textarea>
+  </p>
+  <button data-ng-disabled="{{name}}.$invalid" type="submit">{{buttonText}}</button>
+</form>

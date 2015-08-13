@@ -1,21 +1,13 @@
 <section data-ng-init="getAll()">
   <button data-ng-click="logout()">Logout</button>
   <h3>New Entry</h3>
-  <form name="newEntryForm" data-ng-submit="create(newEntry)">
-    <p>
-      <label for="newEntryTitle">Title:</label>
-    </p>
-    <p>
-      <input type="text" required name="newEntryTitle" data-ng-model="newEntry.title">
-    </p>
-    <p>
-      <label for="newEntryContent">Entry:</label>
-    </p>
-    <p>
-      <textarea cols="40" rows="5" required name="newEntryContent" data-ng-model="newEntry.entryBody"></textarea>
-    </p>
-    <button type="submit" data-ng-disabled="newEntryForm.$invalid">Post New Entry</button>
-  </form>
+  <div data-entry-writer
+    data-entry="newEntry"
+    data-save="create(newEntry)"
+    data-button-text="'Save New Entry'">
+  </div>
+
+
   <hr>
   <article id="entryList" data-ng-repeat="entry in entries">
     <div data-ng-if="!entry.editing">
@@ -23,13 +15,13 @@
       <p>{{entry.entryBody}}</p>
       <button data-ng-click="edit(entry)">Edit</button>
     </div>
-
-    <form data-ng-if="entry.editing" name="{{entry._id}}form" data-ng-submit="update(entry)">
-      <h3><input type="text" required name="entryTitle" data-ng-model="entry.title"></h3>
-      <p><textarea cols="40" rows="5" required name="entryContent" data-ng-model="entry.entryBody"></textarea></p>
-      <button data-ng-disabled="{{entry._id}}form.$invalid" type="submit">Save</button>
-      <button data-ng-click="cancelEdit(entry)">Cancel</button>
-    </form>
+    <div data-entry-writer
+      data-ng-if="entry.editing"
+      data-entry="entry"
+      data-save="update(entry)"
+      data-button-text="'Save Edited Entry'">
+    </div>
+      <button data-ng-if="entry.editing" data-ng-click="cancelEdit(entry)">Cancel</button>
     <p>Date Posted: {{entry.datePosted}}</p>
     <p data-ng-if="entry.dateEdited">Date Edited: {{entry.dateEdited}}</p>
     <p>
